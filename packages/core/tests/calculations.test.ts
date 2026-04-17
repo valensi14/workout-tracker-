@@ -6,6 +6,10 @@ describe('epley1RM', () => {
     expect(epley1RM(100, 1)).toBe(100);
   });
 
+  it('returns weight when reps is 0', () => {
+    expect(epley1RM(100, 0)).toBe(100);
+  });
+
   it('estimates 1RM from multiple reps', () => {
     // Epley: weight * (1 + reps/30)
     expect(epley1RM(90, 10)).toBeCloseTo(120, 0);
