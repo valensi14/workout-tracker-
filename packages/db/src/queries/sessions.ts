@@ -20,7 +20,7 @@ function rowToSession(r: SessionRow): WorkoutSession {
 }
 
 export function getDraftSession(get: GetFn): WorkoutSession | null {
-  const row = get<SessionRow>('SELECT * FROM workout_session WHERE finished_at IS NULL LIMIT 1');
+  const row = get<SessionRow>('SELECT * FROM workout_session WHERE finished_at IS NULL ORDER BY started_at DESC LIMIT 1');
   return row ? rowToSession(row) : null;
 }
 
@@ -71,6 +71,7 @@ export function getSetsBySession(all: AllFn, sessionId: string): WorkoutSet[] {
   }));
 }
 
+// Only returns sets from finished sessions — use getSetsBySession for in-progress sets
 export function getSetsByExercise(all: AllFn, exerciseId: string): WorkoutSet[] {
   return all<SetRow>(
     `SELECT ws.* FROM workout_set ws
