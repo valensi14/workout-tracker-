@@ -30,6 +30,6 @@ export const BUILT_IN_EXERCISES: Exercise[] = [
   { id: 'ex-lunge', name: 'Lunge', category: 'legs', muscleGroup: 'legs', equipment: 'dumbbell' },
   // Core
   { id: 'ex-plank', name: 'Plank', category: 'core', muscleGroup: 'core', equipment: null },
-  { id: 'ex-ab-wheel', name: 'Ab Wheel Rollout', category: 'core', muscleGroup: 'core', equipment: 'ab wheel' },
+  { id: 'ex-ab-wheel', name: 'Ab Wheel Rollout', category: 'core', muscleGroup: 'core', equipment: 'bodyweight' },
   { id: 'ex-cable-crunch', name: 'Cable Crunch', category: 'core', muscleGroup: 'core', equipment: 'cable' },
 ];

@@ -1,6 +1,7 @@
 // packages/db/src/seed/programs.ts
 import type { Program, Routine, RoutineExercise } from '@workout/core';
 
+// Built-in programs use createdAt: 0 so they sort before user-created programs
 export const BUILT_IN_PROGRAMS: Program[] = [
   { id: 'prog-ppl', name: 'Push Pull Legs (PPL)', description: '6-day push/pull/legs split', createdAt: 0 },
   { id: 'prog-531', name: '5/3/1', description: "Jim Wendler's 4-day strength program", createdAt: 0 },
