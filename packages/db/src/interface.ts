@@ -1,7 +1,7 @@
 // packages/db/src/interface.ts
 import type {
   Exercise, Program, Routine, RoutineExercise,
-  WorkoutSession, WorkoutSet, UserSetting
+  WorkoutSession, WorkoutSet
 } from '@workout/core';
 
 export interface DB {

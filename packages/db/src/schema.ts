@@ -1,6 +1,7 @@
 // packages/db/src/schema.ts
 
 export const CREATE_TABLES_SQL = `
+  -- Note: run PRAGMA foreign_keys = ON in the driver to enforce FK constraints
   CREATE TABLE IF NOT EXISTS exercise (
     id           TEXT PRIMARY KEY,
     name         TEXT NOT NULL,
@@ -23,6 +24,7 @@ export const CREATE_TABLES_SQL = `
     sort_order INTEGER NOT NULL DEFAULT 0
   );
 
+  -- reps is TEXT (not INTEGER) to support ranges like "8-12"; workout_set.reps is INTEGER (exact count)
   CREATE TABLE IF NOT EXISTS routine_exercise (
     id          TEXT PRIMARY KEY,
     routine_id  TEXT NOT NULL REFERENCES routine(id),
