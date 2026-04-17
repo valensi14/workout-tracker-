@@ -17,4 +17,8 @@ describe('getNextRoutineIndex', () => {
   it('handles single-routine programs', () => {
     expect(getNextRoutineIndex(0, 1)).toBe(0);
   });
+
+  it('throws for zero totalRoutines', () => {
+    expect(() => getNextRoutineIndex(null, 0)).toThrow('totalRoutines must be >= 1');
+  });
 });

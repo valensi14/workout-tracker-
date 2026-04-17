@@ -9,6 +9,7 @@ export function getNextRoutineIndex(
   currentIndex: number | null,
   totalRoutines: number
 ): number {
+  if (totalRoutines <= 0) throw new Error('totalRoutines must be >= 1');
   if (currentIndex === null) return 0;
   return (currentIndex + 1) % totalRoutines;
 }
