@@ -103,7 +103,10 @@ export async function createWebDB(openDB: any): Promise<DB> {
     setSetting: (key, value) => db.put('user_setting', { key, value }).then(() => {}),
 
     seedExercises: async (exercises) => {
-      for (const e of exercises) await db.put('exercise', e);
+      for (const e of exercises) {
+        const existing = await db.get('exercise', e.id);
+        if (!existing) await db.put('exercise', e);
+      }
     },
     seedPrograms: async (programs, routines, routineExercises) => {
       for (const p of programs) await db.put('program', p);
