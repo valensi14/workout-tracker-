@@ -1100,11 +1100,39 @@ export const BUILT_IN_ROUTINE_EXERCISES: RoutineExercise[] = [
 ];
 ```
 
-- [ ] **Step 3: Commit**
+- [ ] **Step 3: Add GZCLP to seed/programs.ts**
+
+Append to `BUILT_IN_PROGRAMS`:
+
+```ts
+{ id: 'prog-gzclp', name: 'GZCLP', description: 'Greyskull Linear Progression — 3-day full-body', createdAt: 0 },
+```
+
+Append to `BUILT_IN_ROUTINES`:
+
+```ts
+{ id: 'r-gzclp-a', programId: 'prog-gzclp', name: 'Workout A', order: 0 },
+{ id: 'r-gzclp-b', programId: 'prog-gzclp', name: 'Workout B', order: 1 },
+```
+
+Append to `BUILT_IN_ROUTINE_EXERCISES`:
+
+```ts
+// GZCLP Workout A
+{ id: 're-gzclp-a-1', routineId: 'r-gzclp-a', exerciseId: 'ex-squat', sets: 3, reps: '5', order: 0 },
+{ id: 're-gzclp-a-2', routineId: 'r-gzclp-a', exerciseId: 'ex-bench-press', sets: 3, reps: '5', order: 1 },
+{ id: 're-gzclp-a-3', routineId: 'r-gzclp-a', exerciseId: 'ex-deadlift', sets: 1, reps: '5', order: 2 },
+// GZCLP Workout B
+{ id: 're-gzclp-b-1', routineId: 'r-gzclp-b', exerciseId: 'ex-squat', sets: 3, reps: '5', order: 0 },
+{ id: 're-gzclp-b-2', routineId: 'r-gzclp-b', exerciseId: 'ex-ohp', sets: 3, reps: '5', order: 1 },
+{ id: 're-gzclp-b-3', routineId: 'r-gzclp-b', exerciseId: 'ex-deadlift', sets: 1, reps: '5', order: 2 },
+```
+
+- [ ] **Step 4: Commit**
 
 ```bash
 git add packages/db/src/seed/
-git commit -m "feat(db): add built-in exercise and program seed data"
+git commit -m "feat(db): add built-in exercise and program seed data (PPL, 5/3/1, GZCLP)"
 ```
 
 ---
@@ -2670,6 +2698,451 @@ export default function ActiveWorkout() {
 ```bash
 git add apps/web/src/
 git commit -m "feat(web): all page components — Today, History, Programs, Exercises, Progress, ActiveWorkout"
+```
+
+---
+
+---
+
+### Task 19: Volume per session on Progress screens
+
+Add a volume bar/line to both mobile and web Progress screens. Volume = sum of weight × reps per session.
+
+**Files:**
+- Modify: `apps/mobile/app/(tabs)/progress.tsx`
+- Modify: `apps/web/src/pages/Progress.tsx`
+
+- [ ] **Step 1: Add volume to sessionBests in mobile progress.tsx**
+
+Replace the `sessionBests` memo in `apps/mobile/app/(tabs)/progress.tsx`:
+
+```ts
+const sessionBests = React.useMemo(() => {
+  const groups: Record<string, WorkoutSet[]> = {};
+  for (const s of history) { (groups[s.sessionId] ??= []).push(s); }
+  return Object.entries(groups).map(([, sets], i) => {
+    const best = sets.reduce((b, s) => epley1RM(s.weight, s.reps) > epley1RM(b.weight, b.reps) ? s : b);
+    return {
+      date: best.completedAt,
+      estimated1RM: epley1RM(best.weight, best.reps),
+      volume: calculateVolume(sets),
+      bestWeight: best.weight,
+      bestReps: best.reps,
+    };
+  }).sort((a, b) => a.date - b.date);
+}, [history]);
+```
+
+Then below the 1RM chart, add a volume section:
+
+```tsx
+{sessionBests.length > 1 && (
+  <View style={styles.chartContainer}>
+    <Text style={styles.chartLabel}>Volume per Session (kg)</Text>
+    <LineChart.Chart
+      data={sessionBests.map((b, i) => ({ x: i, y: b.volume }))}
+      height={200}
+    >
+      <LineChart.Line color="#FF9500" />
+    </LineChart.Chart>
+  </View>
+)}
+```
+
+- [ ] **Step 2: Add volume to sessionBests in web Progress.tsx**
+
+Replace the `sessionBests` memo in `apps/web/src/pages/Progress.tsx`:
+
+```ts
+const sessionBests = useMemo(() => {
+  const groups: Record<string, WorkoutSet[]> = {};
+  for (const s of history) (groups[s.sessionId] ??= []).push(s);
+  return Object.entries(groups).map(([, sets], i) => {
+    const best = sets.reduce((b, s) => epley1RM(s.weight, s.reps) > epley1RM(b.weight, b.reps) ? s : b);
+    return {
+      x: i + 1,
+      y: epley1RM(best.weight, best.reps),
+      volume: calculateVolume(sets),
+      weight: best.weight,
+      reps: best.reps,
+    };
+  });
+}, [history]);
+```
+
+Add the volume chart below the 1RM chart:
+
+```tsx
+{sessionBests.length > 1 && (
+  <div>
+    <h3>Volume per Session (kg)</h3>
+    <VictoryChart width={600} height={250}>
+      <VictoryAxis />
+      <VictoryAxis dependentAxis />
+      <VictoryLine
+        data={sessionBests.map(b => ({ x: b.x, y: b.volume }))}
+        style={{ data: { stroke: '#FF9500', strokeWidth: 2 } }}
+      />
+    </VictoryChart>
+  </div>
+)}
+```
+
+- [ ] **Step 3: Add `calculateVolume` import to both progress files**
+
+In `apps/mobile/app/(tabs)/progress.tsx`, update the import:
+```ts
+import { epley1RM, calculateVolume } from '@workout/core';
+```
+
+In `apps/web/src/pages/Progress.tsx`, update the import:
+```ts
+import { epley1RM, calculateVolume } from '@workout/core';
+```
+
+- [ ] **Step 4: Commit**
+
+```bash
+git add apps/mobile/app/(tabs)/progress.tsx apps/web/src/pages/Progress.tsx
+git commit -m "feat: add volume per session chart to progress screens"
+```
+
+---
+
+### Task 20: Error handling — db write toasts
+
+**Files:**
+- Create: `apps/mobile/hooks/useToast.ts`
+- Create: `apps/web/src/hooks/useToast.ts`
+- Modify: `apps/mobile/app/workout/[id].tsx`
+- Modify: `apps/web/src/pages/ActiveWorkout.tsx`
+
+- [ ] **Step 1: Create mobile toast hook**
+
+```ts
+// apps/mobile/hooks/useToast.ts
+import { Alert } from 'react-native';
+
+export function useToast() {
+  return {
+    error: (msg: string) => Alert.alert('Error', msg),
+  };
+}
+```
+
+- [ ] **Step 2: Create web toast hook**
+
+```ts
+// apps/web/src/hooks/useToast.ts
+export function useToast() {
+  return {
+    error: (msg: string) => {
+      const el = document.createElement('div');
+      el.textContent = msg;
+      Object.assign(el.style, {
+        position: 'fixed', bottom: '24px', left: '50%', transform: 'translateX(-50%)',
+        background: '#FF3B30', color: '#fff', padding: '10px 20px',
+        borderRadius: '8px', fontSize: '14px', zIndex: '9999',
+      });
+      document.body.appendChild(el);
+      setTimeout(() => el.remove(), 3000);
+    },
+  };
+}
+```
+
+- [ ] **Step 3: Wrap completeSet in try/catch in mobile ActiveWorkout**
+
+In `apps/mobile/app/workout/[id].tsx`, add the import and wrap the db call:
+
+```ts
+import { useToast } from '../../hooks/useToast';
+
+// inside component:
+const { error } = useToast();
+
+async function completeSet(entry: SetEntry) {
+  const weight = parseFloat(entry.weight);
+  const reps = parseInt(entry.reps, 10);
+  if (isNaN(weight) || isNaN(reps)) { Alert.alert('Invalid', 'Enter valid weight and reps'); return; }
+  const set = { /* same as before */ };
+  try {
+    await db.addSet(set);
+    addSet(set);
+    setLocalSets(prev => prev.map(s => s.id === entry.id ? { ...s, done: true } : s));
+    setRestSeconds(90);
+  } catch {
+    error("Couldn't save set — try again");
+  }
+}
+```
+
+- [ ] **Step 4: Wrap completeSet and handleFinish in try/catch in web ActiveWorkout**
+
+In `apps/web/src/pages/ActiveWorkout.tsx`, add the import and wrap both db calls:
+
+```ts
+import { useToast } from '../hooks/useToast';
+
+// inside component:
+const { error } = useToast();
+
+async function completeSet(entry: SetEntry) {
+  const weight = parseFloat(entry.weight);
+  const reps = parseInt(entry.reps, 10);
+  if (isNaN(weight) || isNaN(reps)) return;
+  const s = { /* same as before */ };
+  try {
+    await db.addSet(s);
+    addSet(s);
+    setLocalSets(p => p.map(r => r.id === entry.id ? { ...r, done: true } : r));
+    setRestSeconds(90);
+  } catch {
+    error("Couldn't save set — try again");
+  }
+}
+
+async function handleFinish() {
+  if (!id) return;
+  try {
+    await db.finishSession(id, Date.now());
+    // ... rest of finish logic unchanged
+    finishSession();
+    navigate('/');
+  } catch {
+    error("Couldn't finish workout — try again");
+  }
+}
+```
+
+- [ ] **Step 5: Commit**
+
+```bash
+git add apps/mobile/hooks/ apps/web/src/hooks/ apps/mobile/app/workout/[id].tsx apps/web/src/pages/ActiveWorkout.tsx
+git commit -m "feat: add error toast on db write failures"
+```
+
+---
+
+### Task 21: Custom program creation (mobile + web)
+
+**Files:**
+- Create: `apps/mobile/app/programs/new.tsx`
+- Create: `apps/web/src/pages/NewProgram.tsx`
+- Modify: `apps/mobile/app/(tabs)/programs.tsx`
+- Modify: `apps/web/src/pages/Programs.tsx`
+- Modify: `apps/web/src/App.tsx`
+
+- [ ] **Step 1: Create mobile new-program screen**
+
+```tsx
+// apps/mobile/app/programs/new.tsx
+import React, { useEffect, useState } from 'react';
+import { View, Text, TextInput, TouchableOpacity, FlatList, StyleSheet, Alert } from 'react-native';
+import { useRouter } from 'expo-router';
+import { useDB } from '../../db';
+import type { Exercise, Routine, RoutineExercise } from '@workout/core';
+import { randomUUID } from 'expo-crypto';
+
+export default function NewProgramScreen() {
+  const db = useDB();
+  const router = useRouter();
+  const [name, setName] = useState('');
+  const [description, setDescription] = useState('');
+  const [routines, setRoutines] = useState<Array<{ name: string; exercises: Array<{ exerciseId: string; sets: number; reps: string }> }>>([]);
+  const [exercises, setExercises] = useState<Exercise[]>([]);
+
+  useEffect(() => { db.getExercises().then(setExercises); }, []);
+
+  function addRoutine() {
+    setRoutines(prev => [...prev, { name: `Day ${prev.length + 1}`, exercises: [] }]);
+  }
+
+  function addExerciseToRoutine(routineIdx: number, exerciseId: string) {
+    setRoutines(prev => prev.map((r, i) =>
+      i === routineIdx ? { ...r, exercises: [...r.exercises, { exerciseId, sets: 3, reps: '8-12' }] } : r
+    ));
+  }
+
+  async function save() {
+    if (!name.trim()) { Alert.alert('Name required'); return; }
+    const programId = randomUUID();
+    const program = { id: programId, name: name.trim(), description: description.trim(), createdAt: Date.now() };
+    const rList: Routine[] = routines.map((r, i) => ({ id: randomUUID(), programId, name: r.name, order: i }));
+    const reList: RoutineExercise[] = routines.flatMap((r, ri) =>
+      r.exercises.map((e, ei) => ({ id: randomUUID(), routineId: rList[ri].id, exerciseId: e.exerciseId, sets: e.sets, reps: e.reps, order: ei }))
+    );
+    await db.seedPrograms([program], rList, reList);
+    router.back();
+  }
+
+  return (
+    <View style={styles.container}>
+      <Text style={styles.title}>New Program</Text>
+      <TextInput style={styles.input} placeholder="Program name" value={name} onChangeText={setName} />
+      <TextInput style={styles.input} placeholder="Description (optional)" value={description} onChangeText={setDescription} />
+
+      <Text style={styles.section}>Days</Text>
+      {routines.map((routine, ri) => (
+        <View key={ri} style={styles.routineBlock}>
+          <TextInput style={styles.input} value={routine.name} onChangeText={v => setRoutines(prev => prev.map((r, i) => i === ri ? { ...r, name: v } : r))} />
+          {routine.exercises.map((e, ei) => {
+            const ex = exercises.find(x => x.id === e.exerciseId);
+            return <Text key={ei} style={styles.exerciseItem}>{ex?.name ?? e.exerciseId} — {e.sets}×{e.reps}</Text>;
+          })}
+          <TouchableOpacity onPress={() => {
+            Alert.alert('Add Exercise', 'Choose exercise', exercises.slice(0, 10).map(ex => ({ text: ex.name, onPress: () => addExerciseToRoutine(ri, ex.id) })));
+          }}>
+            <Text style={styles.addEx}>+ Add Exercise</Text>
+          </TouchableOpacity>
+        </View>
+      ))}
+
+      <TouchableOpacity onPress={addRoutine} style={styles.addDay}>
+        <Text style={styles.addDayText}>+ Add Day</Text>
+      </TouchableOpacity>
+      <TouchableOpacity onPress={save} style={styles.saveBtn}>
+        <Text style={styles.saveBtnText}>Save Program</Text>
+      </TouchableOpacity>
+    </View>
+  );
+}
+
+const styles = StyleSheet.create({
+  container: { flex: 1, backgroundColor: '#fff', padding: 20 },
+  title: { fontSize: 24, fontWeight: 'bold', marginBottom: 16 },
+  input: { borderWidth: 1, borderColor: '#ddd', borderRadius: 8, padding: 10, marginBottom: 10 },
+  section: { fontWeight: '600', fontSize: 16, marginVertical: 12 },
+  routineBlock: { borderWidth: 1, borderColor: '#eee', borderRadius: 10, padding: 12, marginBottom: 10 },
+  exerciseItem: { color: '#555', fontSize: 14, marginBottom: 4 },
+  addEx: { color: '#007AFF', fontSize: 14 },
+  addDay: { borderWidth: 1, borderColor: '#007AFF', borderRadius: 10, padding: 12, marginBottom: 12 },
+  addDayText: { color: '#007AFF', textAlign: 'center' },
+  saveBtn: { backgroundColor: '#007AFF', borderRadius: 10, padding: 14 },
+  saveBtnText: { color: '#fff', textAlign: 'center', fontWeight: 'bold', fontSize: 16 },
+});
+```
+
+- [ ] **Step 2: Add "New Program" button to mobile programs.tsx**
+
+In `apps/mobile/app/(tabs)/programs.tsx`, add a button at the top of the return:
+
+```tsx
+import { useRouter } from 'expo-router';
+// inside component:
+const router = useRouter();
+
+// add below the title:
+<TouchableOpacity style={styles.newBtn} onPress={() => router.push('/programs/new')}>
+  <Text style={styles.newBtnText}>+ New Program</Text>
+</TouchableOpacity>
+```
+
+Add to styles:
+```ts
+newBtn: { backgroundColor: '#f0f7ff', borderRadius: 10, padding: 12, marginBottom: 16 },
+newBtnText: { color: '#007AFF', textAlign: 'center', fontWeight: '600' },
+```
+
+- [ ] **Step 3: Create web NewProgram.tsx**
+
+```tsx
+// apps/web/src/pages/NewProgram.tsx
+import React, { useEffect, useState } from 'react';
+import { useNavigate } from 'react-router-dom';
+import { useDB } from '../App';
+import type { Exercise, Routine, RoutineExercise } from '@workout/core';
+
+export default function NewProgram() {
+  const db = useDB();
+  const navigate = useNavigate();
+  const [name, setName] = useState('');
+  const [description, setDescription] = useState('');
+  const [routines, setRoutines] = useState<Array<{ name: string; exercises: Array<{ exerciseId: string; sets: number; reps: string }> }>>([]);
+  const [exercises, setExercises] = useState<Exercise[]>([]);
+
+  useEffect(() => { db.getExercises().then(setExercises); }, []);
+
+  function addRoutine() {
+    setRoutines(p => [...p, { name: `Day ${p.length + 1}`, exercises: [] }]);
+  }
+
+  function addExercise(routineIdx: number, exerciseId: string) {
+    setRoutines(p => p.map((r, i) => i === routineIdx ? { ...r, exercises: [...r.exercises, { exerciseId, sets: 3, reps: '8-12' }] } : r));
+  }
+
+  async function save() {
+    if (!name.trim()) return;
+    const programId = crypto.randomUUID();
+    const program = { id: programId, name: name.trim(), description: description.trim(), createdAt: Date.now() };
+    const rList: Routine[] = routines.map((r, i) => ({ id: crypto.randomUUID(), programId, name: r.name, order: i }));
+    const reList: RoutineExercise[] = routines.flatMap((r, ri) =>
+      r.exercises.map((e, ei) => ({ id: crypto.randomUUID(), routineId: rList[ri].id, exerciseId: e.exerciseId, sets: e.sets, reps: e.reps, order: ei }))
+    );
+    await db.seedPrograms([program], rList, reList);
+    navigate('/programs');
+  }
+
+  const inputStyle: React.CSSProperties = { border: '1px solid #ddd', borderRadius: 8, padding: '8px 12px', fontSize: 15, width: '100%', boxSizing: 'border-box', marginBottom: 10 };
+
+  return (
+    <div style={{ maxWidth: 600 }}>
+      <button onClick={() => navigate('/programs')} style={{ background: 'none', border: 'none', color: '#007AFF', cursor: 'pointer', marginBottom: 8 }}>← Back</button>
+      <h1>New Program</h1>
+      <input style={inputStyle} placeholder="Program name" value={name} onChange={e => setName(e.target.value)} />
+      <input style={inputStyle} placeholder="Description (optional)" value={description} onChange={e => setDescription(e.target.value)} />
+
+      <h3>Days</h3>
+      {routines.map((routine, ri) => (
+        <div key={ri} style={{ border: '1px solid #eee', borderRadius: 10, padding: 16, marginBottom: 12 }}>
+          <input style={{ ...inputStyle, fontWeight: 600 }} value={routine.name} onChange={e => setRoutines(p => p.map((r, i) => i === ri ? { ...r, name: e.target.value } : r))} />
+          {routine.exercises.map((e, ei) => {
+            const ex = exercises.find(x => x.id === e.exerciseId);
+            return <div key={ei} style={{ color: '#555', fontSize: 14, marginBottom: 4 }}>{ex?.name ?? e.exerciseId} — {e.sets}×{e.reps}</div>;
+          })}
+          <select onChange={e => { if (e.target.value) { addExercise(ri, e.target.value); e.target.value = ''; } }} style={{ ...inputStyle, marginTop: 8 }}>
+            <option value="">+ Add exercise…</option>
+            {exercises.map(ex => <option key={ex.id} value={ex.id}>{ex.name}</option>)}
+          </select>
+        </div>
+      ))}
+
+      <button onClick={addRoutine} style={{ border: '1px solid #007AFF', background: 'none', color: '#007AFF', borderRadius: 8, padding: '10px 16px', cursor: 'pointer', marginBottom: 16, width: '100%' }}>+ Add Day</button>
+      <button onClick={save} style={{ background: '#007AFF', color: '#fff', border: 'none', borderRadius: 8, padding: '12px 20px', fontSize: 15, cursor: 'pointer', width: '100%' }}>Save Program</button>
+    </div>
+  );
+}
+```
+
+- [ ] **Step 4: Wire NewProgram into web App.tsx**
+
+In `apps/web/src/App.tsx`, add the import and route:
+
+```tsx
+import NewProgram from './pages/NewProgram';
+
+// inside <Routes>:
+<Route path="programs/new" element={<NewProgram />} />
+```
+
+- [ ] **Step 5: Add "New Program" link to web Programs.tsx**
+
+In `apps/web/src/pages/Programs.tsx`, add a button:
+
+```tsx
+import { useNavigate } from 'react-router-dom';
+// inside component:
+const navigate = useNavigate();
+
+// below <h1>:
+<button onClick={() => navigate('/programs/new')} style={{ background: '#007AFF', color: '#fff', border: 'none', borderRadius: 8, padding: '8px 16px', cursor: 'pointer', marginBottom: 20 }}>+ New Program</button>
+```
+
+- [ ] **Step 6: Commit**
+
+```bash
+git add apps/mobile/app/programs/ apps/mobile/app/(tabs)/programs.tsx apps/web/src/pages/NewProgram.tsx apps/web/src/pages/Programs.tsx apps/web/src/App.tsx
+git commit -m "feat: custom program creation on mobile and web"
 ```
 
 ---
