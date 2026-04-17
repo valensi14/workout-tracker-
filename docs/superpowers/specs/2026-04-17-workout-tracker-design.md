@@ -87,9 +87,16 @@ WorkoutSet                 -- individual logged set
   completed_at  INTEGER
 ```
 
+UserSetting                -- key/value store for local preferences
+  key           TEXT PRIMARY KEY  -- e.g. "weight_unit", "active_program_id", "active_routine_index"
+  value         TEXT
+```
+
 **Key decisions:**
 - `routine_id` on `WorkoutSession` is nullable — supports freeform workouts outside any program
-- Weight stored in kg universally; unit preference (kg/lbs) is a display setting
+- Weight stored in kg universally; unit preference (kg/lbs) is a display setting stored in `UserSetting`
+- Active program progress tracked via `active_program_id` + `active_routine_index` in `UserSetting`; index increments on each session finish and wraps around
+- Crash recovery: an unfinished `WorkoutSession` (finished_at IS NULL) is the draft — restored on next open
 - No user table — local-only, v1
 
 ---
@@ -115,7 +122,8 @@ WorkoutSet                 -- individual logged set
 - Tap a row to mark the set complete; swipe to delete
 - Rest timer auto-starts after each completed set
 - Finish workout persists the full session to db
-- Crash recovery: Zustand state is mirrored to a `draft_session` in db after every set; restored on next open if session was never finished
+- Crash recovery: an unfinished `WorkoutSession` (finished_at IS NULL) acts as the draft; restored automatically on next open
+- Rest timer default: 90 seconds (configurable per exercise in a future version)
 
 **Programs**
 - Built-in programs: PPL, 5/3/1, GZCLP
