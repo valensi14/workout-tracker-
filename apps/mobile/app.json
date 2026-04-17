@@ -1,0 +1,10 @@
+{
+  "expo": {
+    "name": "WorkoutTracker",
+    "slug": "workout-tracker",
+    "version": "1.0.0",
+    "scheme": "workout",
+    "platforms": ["ios", "android"],
+    "newArchEnabled": true
+  }
+}
