@@ -20,13 +20,13 @@ export default function ProgramsScreen() {
     await db.setSetting('active_program_id', program.id);
     await db.setSetting('active_routine_index', '0');
     setActiveId(program.id);
-    Alert.alert('Program Started', `${program.name} is now your active program.`);
+    Alert.alert('Template started', `${program.name} is now your active program.`);
   }
 
   return (
     <View style={styles.container}>
       <View style={styles.header}>
-        <Text style={styles.title}>Programs</Text>
+        <Text style={styles.title}>Templates</Text>
         <TouchableOpacity style={styles.newBtn} onPress={() => router.push('/programs/new')}>
           <Text style={styles.newBtnText}>+ New</Text>
         </TouchableOpacity>

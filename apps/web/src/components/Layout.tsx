@@ -4,7 +4,7 @@ import { Outlet, NavLink } from 'react-router-dom';
 const nav = [
   { to: '/', label: 'Today' },
   { to: '/history', label: 'History' },
-  { to: '/programs', label: 'Programs' },
+  { to: '/programs', label: 'Templates' },
   { to: '/exercises', label: 'Exercises' },
   { to: '/progress', label: 'Progress' },
 ];
