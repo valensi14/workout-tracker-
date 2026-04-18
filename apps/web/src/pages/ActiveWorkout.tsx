@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import { useDB } from '../App';
+import { useToast } from '../hooks/useToast';
 import { useWorkoutStore } from '../store/workout';
 import type { Exercise } from '@workout/core';
 import { getNextRoutineIndex } from '@workout/core';
@@ -11,6 +12,7 @@ export default function ActiveWorkout() {
   const { id } = useParams<{ id: string }>();
   const db = useDB();
   const navigate = useNavigate();
+  const { error } = useToast();
   const { activeSession, sets, addSet, finishSession } = useWorkoutStore();
   const [exercises, setExercises] = useState<Exercise[]>([]);
   const [localSets, setLocalSets] = useState<SetEntry[]>([]);
@@ -49,7 +51,7 @@ export default function ActiveWorkout() {
       setLocalSets(p => p.map(r => r.id === entry.id ? { ...r, done: true } : r));
       setRestSeconds(90);
     } catch {
-      alert("Couldn't save set — try again");
+      error("Couldn't save set — try again");
     }
   }
 
@@ -66,7 +68,7 @@ export default function ActiveWorkout() {
       finishSession();
       navigate('/');
     } catch {
-      alert("Couldn't finish workout — try again");
+      error("Couldn't finish workout — try again");
     }
   }
 

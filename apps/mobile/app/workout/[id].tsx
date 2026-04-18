@@ -3,6 +3,7 @@ import React, { useEffect, useState } from 'react';
 import { View, Text, TouchableOpacity, TextInput, StyleSheet, Alert, ScrollView } from 'react-native';
 import { useLocalSearchParams, useRouter } from 'expo-router';
 import { useDB } from '../../db';
+import { useToast } from '../../hooks/useToast';
 import { useWorkoutStore } from '../../store/workout';
 import type { Exercise } from '@workout/core';
 import { getNextRoutineIndex } from '@workout/core';
@@ -15,6 +16,7 @@ export default function ActiveWorkoutScreen() {
   const id = Array.isArray(rawId) ? rawId[0] : (rawId ?? '');
   const db = useDB();
   const router = useRouter();
+  const { error } = useToast();
   const { activeSession, sets, addSet, finishSession } = useWorkoutStore();
   const [exercises, setExercises] = useState<Exercise[]>([]);
   const [localSets, setLocalSets] = useState<SetEntry[]>([]);
@@ -68,7 +70,7 @@ export default function ActiveWorkoutScreen() {
       setLocalSets(p => p.map(s => s.id === entry.id ? { ...s, done: true } : s));
       setRestSeconds(90);
     } catch {
-      Alert.alert('Error', "Couldn't save set — try again");
+      error("Couldn't save set — try again");
     }
   }
 
@@ -87,7 +89,7 @@ export default function ActiveWorkoutScreen() {
       finishSession();
       router.back();
     } catch {
-      Alert.alert('Error', "Couldn't finish workout — try again");
+      error("Couldn't finish workout — try again");
     }
   }
 
