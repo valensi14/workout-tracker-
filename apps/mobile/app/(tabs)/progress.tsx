@@ -5,7 +5,7 @@ import { useFocusEffect } from 'expo-router';
 import { LineChart } from 'victory-native';
 import { useDB } from '../../db';
 import type { Exercise, WorkoutSet } from '@workout/core';
-import { epley1RM, calculateVolume } from '@workout/core';
+import { epley1RM } from '@workout/core';
 
 export default function ProgressScreen() {
   const db = useDB();
@@ -31,7 +31,6 @@ export default function ProgressScreen() {
       return {
         index: i + 1,
         estimated1RM: epley1RM(best.weight, best.reps),
-        volume: calculateVolume(sets),
         bestWeight: best.weight,
         bestReps: best.reps,
         date: best.completedAt,

@@ -11,7 +11,8 @@ import * as Crypto from 'expo-crypto';
 interface SetEntry { id: string; exerciseId: string; weight: string; reps: string; done: boolean; }
 
 export default function ActiveWorkoutScreen() {
-  const { id } = useLocalSearchParams<{ id: string }>();
+  const rawId = useLocalSearchParams<{ id: string }>().id;
+  const id = Array.isArray(rawId) ? rawId[0] : (rawId ?? '');
   const db = useDB();
   const router = useRouter();
   const { activeSession, sets, addSet, finishSession } = useWorkoutStore();
