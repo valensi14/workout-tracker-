@@ -37,7 +37,7 @@ describe('exercises', () => {
   });
 
   it('returns seeded exercises', () => {
-    const ex = [{ id: '1', name: 'Squat', category: 'legs' as const, muscleGroup: 'legs' as const, equipment: null }];
+    const ex = [{ id: '1', name: 'Squat', category: 'legs' as const, muscleGroup: 'quads' as const, equipment: null }];
     seedExercises(run(db), ex);
     const result = getExercises(all(db));
     expect(result).toHaveLength(1);
