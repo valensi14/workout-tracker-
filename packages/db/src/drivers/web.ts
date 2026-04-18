@@ -109,9 +109,18 @@ export async function createWebDB(openDB: any): Promise<DB> {
       }
     },
     seedPrograms: async (programs, routines, routineExercises) => {
-      for (const p of programs) await db.put('program', p);
-      for (const r of routines) await db.put('routine', r);
-      for (const re of routineExercises) await db.put('routine_exercise', re);
+      for (const p of programs) {
+        const existing = await db.get('program', p.id);
+        if (!existing) await db.put('program', p);
+      }
+      for (const r of routines) {
+        const existing = await db.get('routine', r.id);
+        if (!existing) await db.put('routine', r);
+      }
+      for (const re of routineExercises) {
+        const existing = await db.get('routine_exercise', re.id);
+        if (!existing) await db.put('routine_exercise', re);
+      }
     },
   };
 }

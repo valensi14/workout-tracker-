@@ -8,6 +8,7 @@ export default function RootLayout() {
       <Stack>
         <Stack.Screen name="(tabs)" options={{ headerShown: false }} />
         <Stack.Screen name="workout/[id]" options={{ title: 'Workout', presentation: 'modal' }} />
+        <Stack.Screen name="programs/new" options={{ title: 'New Program' }} />
       </Stack>
     </DBProvider>
   );
