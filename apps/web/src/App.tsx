@@ -9,6 +9,7 @@ import Programs from './pages/Programs';
 import Exercises from './pages/Exercises';
 import Progress from './pages/Progress';
 import ActiveWorkout from './pages/ActiveWorkout';
+import NewProgram from './pages/NewProgram';
 
 export const DBContext = React.createContext<DB | null>(null);
 export function useDB(): DB {
@@ -32,6 +33,7 @@ export default function App() {
           <Route path="exercises" element={<Exercises />} />
           <Route path="progress" element={<Progress />} />
           <Route path="workout/:id" element={<ActiveWorkout />} />
+          <Route path="programs/new" element={<NewProgram />} />
         </Route>
         <Route path="*" element={<Navigate to="/" />} />
       </Routes>

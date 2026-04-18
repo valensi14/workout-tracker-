@@ -1,12 +1,13 @@
 // apps/mobile/app/(tabs)/programs.tsx
 import React, { useCallback, useState } from 'react';
 import { View, Text, FlatList, TouchableOpacity, StyleSheet, Alert } from 'react-native';
-import { useFocusEffect } from 'expo-router';
+import { useFocusEffect, useRouter } from 'expo-router';
 import { useDB } from '../../db';
 import type { Program } from '@workout/core';
 
 export default function ProgramsScreen() {
   const db = useDB();
+  const router = useRouter();
   const [programs, setPrograms] = useState<Program[]>([]);
   const [activeId, setActiveId] = useState<string | null>(null);
 
@@ -26,7 +27,7 @@ export default function ProgramsScreen() {
     <View style={styles.container}>
       <View style={styles.header}>
         <Text style={styles.title}>Programs</Text>
-        <TouchableOpacity style={styles.newBtn} onPress={() => Alert.alert('Coming Soon', 'Custom program creation is not yet available.')}>
+        <TouchableOpacity style={styles.newBtn} onPress={() => router.push('/programs/new')}>
           <Text style={styles.newBtnText}>+ New</Text>
         </TouchableOpacity>
       </View>
