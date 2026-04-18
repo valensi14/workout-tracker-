@@ -17,15 +17,15 @@ export default function ActiveWorkout() {
   const [restSeconds, setRestSeconds] = useState<number | null>(null);
 
   useEffect(() => {
-    if (!activeSession?.routineId) return;
+    if (!activeSession || !activeSession.routineId) return;
     (async () => {
-      const res = await db.getRoutineExercises(activeSession.routineId!);
+      const res = await db.getRoutineExercises(activeSession.routineId);
       const exList = (await Promise.all(res.map(re => db.getExerciseById(re.exerciseId)))).filter(Boolean) as Exercise[];
       // Pre-populate one empty set row per exercise
       setExercises(exList);
       setLocalSets(exList.map(ex => ({ id: crypto.randomUUID(), exerciseId: ex.id, weight: '', reps: '', done: false })));
     })();
-  }, [activeSession]);
+  }, [activeSession, db]);
 
   useEffect(() => {
     if (restSeconds === null || restSeconds <= 0) { if (restSeconds === 0) setRestSeconds(null); return; }

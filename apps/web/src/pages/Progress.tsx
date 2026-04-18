@@ -16,10 +16,10 @@ export default function Progress() {
   const sessionBests = useMemo(() => {
     const groups: Record<string, WorkoutSet[]> = {};
     for (const s of history) (groups[s.sessionId] ??= []).push(s);
-    return Object.entries(groups).map(([, sets], i) => {
+    return Object.entries(groups).map(([, sets]) => {
       const best = sets.reduce((b, s) => epley1RM(s.weight, s.reps) > epley1RM(b.weight, b.reps) ? s : b);
-      return { x: i + 1, y: epley1RM(best.weight, best.reps), weight: best.weight, reps: best.reps };
-    });
+      return { x: new Date(best.completedAt), y: epley1RM(best.weight, best.reps), weight: best.weight, reps: best.reps };
+    }).sort((a, b) => a.x.getTime() - b.x.getTime());
   }, [history]);
 
   const pr = history.length ? history.reduce((b, s) => epley1RM(s.weight, s.reps) > epley1RM(b.weight, b.reps) ? s : b) : null;

@@ -5,7 +5,7 @@ import type { WorkoutSession } from '@workout/core';
 export default function History() {
   const db = useDB();
   const [sessions, setSessions] = useState<WorkoutSession[]>([]);
-  useEffect(() => { db.getSessions(50).then(s => setSessions(s.filter(s => s.finishedAt !== null))); }, []);
+  useEffect(() => { db.getSessions(50).then(setSessions); }, []);
 
   return (
     <div>

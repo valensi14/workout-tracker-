@@ -34,9 +34,13 @@ export default function Today() {
 
   async function startWorkout(routine: Routine | null) {
     const session: WorkoutSession = { id: crypto.randomUUID(), routineId: routine?.id ?? null, startedAt: Date.now(), finishedAt: null, notes: null };
-    await db.createSession(session);
-    startSession(session);
-    navigate(`/workout/${session.id}`);
+    try {
+      await db.createSession(session);
+      startSession(session);
+      navigate(`/workout/${session.id}`);
+    } catch {
+      alert("Couldn't start workout — try again");
+    }
   }
 
   return (
