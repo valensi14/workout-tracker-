@@ -2,6 +2,7 @@
 import React, { useCallback, useMemo, useState } from 'react';
 import { View, Text, FlatList, TouchableOpacity, ScrollView, StyleSheet } from 'react-native';
 import { useFocusEffect } from 'expo-router';
+import { LineChart } from 'victory-native';
 import { useDB } from '../../db';
 import type { Exercise, WorkoutSet } from '@workout/core';
 import { epley1RM, calculateVolume } from '@workout/core';
@@ -75,17 +76,15 @@ export default function ProgressScreen() {
         </View>
       )}
 
-      {sessionBests.length > 0 && (
-        <View style={styles.section}>
-          <Text style={styles.sectionTitle}>Session History</Text>
-          {sessionBests.map((b, i) => (
-            <View key={i} style={styles.historyRow}>
-              <Text style={styles.historyDate}>{new Date(b.date).toLocaleDateString()}</Text>
-              <Text style={styles.historyStats}>
-                Best: {b.bestWeight}kg×{b.bestReps} · 1RM: {b.estimated1RM}kg · Vol: {b.volume}kg
-              </Text>
-            </View>
-          ))}
+      {sessionBests.length > 1 && (
+        <View style={styles.chartContainer}>
+          <Text style={styles.chartLabel}>Estimated 1RM Over Time</Text>
+          <LineChart.Chart
+            data={sessionBests.map((b, i) => ({ x: i, y: b.estimated1RM }))}
+            height={200}
+          >
+            <LineChart.Line color="#007AFF" />
+          </LineChart.Chart>
         </View>
       )}
 
@@ -108,10 +107,7 @@ const styles = StyleSheet.create({
   prLabel: { color: '#007AFF', fontWeight: '600', marginBottom: 4 },
   prValue: { fontSize: 22, fontWeight: 'bold' },
   prEst: { color: '#555', marginTop: 4 },
-  section: { marginTop: 8 },
-  sectionTitle: { fontWeight: '600', fontSize: 16, marginBottom: 8 },
-  historyRow: { paddingVertical: 10, borderBottomWidth: 1, borderBottomColor: '#f5f5f5' },
-  historyDate: { fontSize: 14, fontWeight: '500', color: '#333' },
-  historyStats: { fontSize: 13, color: '#666', marginTop: 2 },
+  chartContainer: { marginTop: 16 },
+  chartLabel: { fontWeight: '600', fontSize: 16, marginBottom: 8 },
   empty: { textAlign: 'center', color: '#aaa', marginTop: 40 },
 });

@@ -1,6 +1,6 @@
 // apps/mobile/app/workout/[id].tsx
 import React, { useEffect, useState } from 'react';
-import { View, Text, TouchableOpacity, FlatList, TextInput, StyleSheet, Alert, ScrollView } from 'react-native';
+import { View, Text, TouchableOpacity, TextInput, StyleSheet, Alert, ScrollView } from 'react-native';
 import { useLocalSearchParams, useRouter } from 'expo-router';
 import { useDB } from '../../db';
 import { useWorkoutStore } from '../../store/workout';
