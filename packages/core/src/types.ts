@@ -2,8 +2,9 @@
 
 export type MuscleGroup =
   | 'chest' | 'back' | 'shoulders'
-  | 'biceps' | 'triceps' | 'legs'
-  | 'core' | 'cardio' | 'full_body';
+  | 'biceps' | 'triceps' | 'forearms'
+  | 'quads' | 'hamstrings' | 'glutes' | 'calves'
+  | 'core' | 'full_body';
 
 export type Category = 'push' | 'pull' | 'legs' | 'core' | 'cardio';
 
