@@ -14,7 +14,7 @@ export default function NewProgramScreen() {
   const [routines, setRoutines] = useState<Array<{ name: string; exercises: Array<{ exerciseId: string; sets: number; reps: string }> }>>([]);
   const [exercises, setExercises] = useState<Exercise[]>([]);
 
-  useEffect(() => { db.getExercises().then(setExercises); }, []);
+  useEffect(() => { db.getExercises().then(setExercises); }, [db]);
 
   function addRoutine() {
     setRoutines(prev => [...prev, { name: `Day ${prev.length + 1}`, exercises: [] }]);
@@ -61,7 +61,7 @@ export default function NewProgramScreen() {
             return <Text key={ei} style={styles.exerciseItem}>{ex?.name ?? e.exerciseId} — {e.sets}×{e.reps}</Text>;
           })}
           <TouchableOpacity onPress={() => {
-            Alert.alert('Add Exercise', 'Choose exercise', exercises.slice(0, 10).map(ex => ({ text: ex.name, onPress: () => addExerciseToRoutine(ri, ex.id) })));
+            Alert.alert('Add Exercise', 'Choose exercise', exercises.map(ex => ({ text: ex.name, onPress: () => addExerciseToRoutine(ri, ex.id) })));
           }}>
             <Text style={styles.addEx}>+ Add Exercise</Text>
           </TouchableOpacity>

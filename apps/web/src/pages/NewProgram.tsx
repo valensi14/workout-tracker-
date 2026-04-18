@@ -2,17 +2,19 @@
 import React, { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useDB } from '../App';
+import { useToast } from '../hooks/useToast';
 import type { Exercise, Routine, RoutineExercise } from '@workout/core';
 
 export default function NewProgram() {
   const db = useDB();
   const navigate = useNavigate();
+  const { error } = useToast();
   const [name, setName] = useState('');
   const [description, setDescription] = useState('');
   const [routines, setRoutines] = useState<Array<{ name: string; exercises: Array<{ exerciseId: string; sets: number; reps: string }> }>>([]);
   const [exercises, setExercises] = useState<Exercise[]>([]);
 
-  useEffect(() => { db.getExercises().then(setExercises); }, []);
+  useEffect(() => { db.getExercises().then(setExercises); }, [db]);
 
   function addRoutine() {
     setRoutines(p => [...p, { name: `Day ${p.length + 1}`, exercises: [] }]);
@@ -23,7 +25,7 @@ export default function NewProgram() {
   }
 
   async function save() {
-    if (!name.trim()) return;
+    if (!name.trim()) { error('Program name is required'); return; }
     const programId = crypto.randomUUID();
     const program = { id: programId, name: name.trim(), description: description.trim(), createdAt: Date.now() };
     const rList: Routine[] = routines.map((r, i) => ({ id: crypto.randomUUID(), programId, name: r.name, order: i }));
@@ -34,7 +36,7 @@ export default function NewProgram() {
       await db.seedPrograms([program], rList, reList);
       navigate('/programs');
     } catch {
-      alert("Couldn't save program — try again");
+      error("Couldn't save program — try again");
     }
   }
 
