@@ -1,7 +1,7 @@
 import React, { useEffect, useState, useMemo } from 'react';
 import { useDB } from '../App';
 import type { Exercise, WorkoutSet } from '@workout/core';
-import { epley1RM } from '@workout/core';
+import { epley1RM, calculateVolume } from '@workout/core';
 import { VictoryLine, VictoryChart, VictoryAxis } from 'victory';
 
 export default function Progress() {
@@ -18,7 +18,13 @@ export default function Progress() {
     for (const s of history) (groups[s.sessionId] ??= []).push(s);
     return Object.entries(groups).map(([, sets]) => {
       const best = sets.reduce((b, s) => epley1RM(s.weight, s.reps) > epley1RM(b.weight, b.reps) ? s : b);
-      return { x: new Date(best.completedAt), y: epley1RM(best.weight, best.reps), weight: best.weight, reps: best.reps };
+      return {
+        x: new Date(best.completedAt),
+        y: epley1RM(best.weight, best.reps),
+        volume: calculateVolume(sets),
+        weight: best.weight,
+        reps: best.reps,
+      };
     }).sort((a, b) => a.x.getTime() - b.x.getTime());
   }, [history]);
 
@@ -52,6 +58,19 @@ export default function Progress() {
             <VictoryAxis />
             <VictoryAxis dependentAxis />
             <VictoryLine data={sessionBests} style={{ data: { stroke: '#007AFF', strokeWidth: 2 } }} />
+          </VictoryChart>
+        </div>
+      )}
+      {sessionBests.length > 1 && (
+        <div>
+          <h3>Volume per Session (kg)</h3>
+          <VictoryChart width={600} height={250}>
+            <VictoryAxis />
+            <VictoryAxis dependentAxis />
+            <VictoryLine
+              data={sessionBests.map(b => ({ x: b.x, y: b.volume }))}
+              style={{ data: { stroke: '#FF9500', strokeWidth: 2 } }}
+            />
           </VictoryChart>
         </div>
       )}

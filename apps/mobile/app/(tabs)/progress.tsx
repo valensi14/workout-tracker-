@@ -5,7 +5,7 @@ import { useFocusEffect } from 'expo-router';
 import { LineChart } from 'victory-native';
 import { useDB } from '../../db';
 import type { Exercise, WorkoutSet } from '@workout/core';
-import { epley1RM } from '@workout/core';
+import { epley1RM, calculateVolume } from '@workout/core';
 
 export default function ProgressScreen() {
   const db = useDB();
@@ -23,17 +23,17 @@ export default function ProgressScreen() {
     setHistory(sets);
   }
 
-  const sessionBests = useMemo(() => {
+  const sessionBests = React.useMemo(() => {
     const groups: Record<string, WorkoutSet[]> = {};
-    for (const s of history) (groups[s.sessionId] ??= []).push(s);
-    return Object.entries(groups).map(([, sets], i) => {
+    for (const s of history) { (groups[s.sessionId] ??= []).push(s); }
+    return Object.entries(groups).map(([, sets]) => {
       const best = sets.reduce((b, s) => epley1RM(s.weight, s.reps) > epley1RM(b.weight, b.reps) ? s : b);
       return {
-        index: i + 1,
+        date: best.completedAt,
         estimated1RM: epley1RM(best.weight, best.reps),
+        volume: calculateVolume(sets),
         bestWeight: best.weight,
         bestReps: best.reps,
-        date: best.completedAt,
       };
     }).sort((a, b) => a.date - b.date);
   }, [history]);
@@ -83,6 +83,18 @@ export default function ProgressScreen() {
             height={200}
           >
             <LineChart.Line color="#007AFF" />
+          </LineChart.Chart>
+        </View>
+      )}
+
+      {sessionBests.length > 1 && (
+        <View style={styles.chartContainer}>
+          <Text style={styles.chartLabel}>Volume per Session (kg)</Text>
+          <LineChart.Chart
+            data={sessionBests.map((b, i) => ({ x: i, y: b.volume }))}
+            height={200}
+          >
+            <LineChart.Line color="#FF9500" />
           </LineChart.Chart>
         </View>
       )}
