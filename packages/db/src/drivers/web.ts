@@ -85,6 +85,16 @@ export async function createWebDB(openDB: any): Promise<DB> {
 
     addSet: (s) => db.put('workout_set', s).then(() => {}),
     deleteSet: (id) => db.delete('workout_set', id).then(() => {}),
+
+    deleteProgram: async (id) => {
+      const routines = await db.getAllFromIndex('routine', 'programId', id);
+      for (const r of routines) {
+        const res = await db.getAllFromIndex('routine_exercise', 'routineId', r.id);
+        for (const re of res) await db.delete('routine_exercise', re.id);
+        await db.delete('routine', r.id);
+      }
+      await db.delete('program', id);
+    },
     getSetsBySession: (sessionId) => db.getAllFromIndex('workout_set', 'sessionId', sessionId),
 
     getSetsByExercise: async (exerciseId) => {

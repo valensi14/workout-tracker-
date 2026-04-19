@@ -82,6 +82,16 @@ export async function createMobileDB(SQLite: any): Promise<DB> {
 
     deleteSet: (id) => run('DELETE FROM workout_set WHERE id = ?', [id]),
 
+    deleteProgram: async (id) => {
+      // Get all routines for this program
+      const routines = await all<any>('SELECT id FROM routine WHERE program_id = ?', [id]);
+      for (const r of routines) {
+        await run('DELETE FROM routine_exercise WHERE routine_id = ?', [r.id]);
+      }
+      await run('DELETE FROM routine WHERE program_id = ?', [id]);
+      await run('DELETE FROM program WHERE id = ?', [id]);
+    },
+
     getSetsBySession: (sessionId) => all<any>(
       'SELECT * FROM workout_set WHERE session_id = ? ORDER BY set_number', [sessionId]
     ).then(rows => rows.map(r => ({ id: r.id, sessionId: r.session_id, exerciseId: r.exercise_id, setNumber: r.set_number, weight: r.weight, reps: r.reps, rpe: r.rpe, completedAt: r.completed_at }))),

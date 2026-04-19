@@ -24,6 +24,7 @@ export interface DB {
   // sets
   addSet(set: WorkoutSet): Promise<void>;
   deleteSet(id: string): Promise<void>;
+  deleteProgram(id: string): Promise<void>;
   getSetsBySession(sessionId: string): Promise<WorkoutSet[]>;
   getSetsByExercise(exerciseId: string): Promise<WorkoutSet[]>;
 

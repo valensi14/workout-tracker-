@@ -16,6 +16,24 @@ export default function ProgramsScreen() {
     db.getSetting('active_program_id').then(setActiveId);
   }, [db]));
 
+  async function deleteProgram(p: Program) {
+    Alert.alert(
+      'Delete Template',
+      `Delete "${p.name}"? This cannot be undone.`,
+      [
+        { text: 'Cancel', style: 'cancel' },
+        {
+          text: 'Delete', style: 'destructive',
+          onPress: async () => {
+            await db.deleteProgram(p.id);
+            setPrograms(prev => prev.filter(x => x.id !== p.id));
+            if (activeId === p.id) setActiveId(null);
+          }
+        }
+      ]
+    );
+  }
+
   async function activateProgram(program: Program) {
     await db.setSetting('active_program_id', program.id);
     await db.setSetting('active_routine_index', '0');
@@ -38,12 +56,17 @@ export default function ProgramsScreen() {
           <View style={styles.card}>
             <View style={styles.cardHeader}>
               <Text style={styles.programName}>{item.name}</Text>
-              {activeId === item.id && <Text style={styles.activeBadge}>Active</Text>}
+              <View style={{ flexDirection: 'row', alignItems: 'center', gap: 8 }}>
+                {activeId === item.id && <Text style={styles.activeBadge}>Active</Text>}
+                <TouchableOpacity onPress={() => deleteProgram(item)} style={styles.deleteBtn}>
+                  <Text style={styles.deleteBtnText}>×</Text>
+                </TouchableOpacity>
+              </View>
             </View>
             <Text style={styles.desc}>{item.description}</Text>
             {activeId !== item.id && (
               <TouchableOpacity style={styles.startBtn} onPress={() => activateProgram(item)}>
-                <Text style={styles.startBtnText}>Start Program</Text>
+                <Text style={styles.startBtnText}>Start Template</Text>
               </TouchableOpacity>
             )}
           </View>
@@ -66,4 +89,6 @@ const styles = StyleSheet.create({
   desc: { color: '#666', fontSize: 14, marginBottom: 10 },
   startBtn: { backgroundColor: '#007AFF', borderRadius: 8, padding: 10 },
   startBtnText: { color: '#fff', textAlign: 'center', fontWeight: '600' },
+  deleteBtn: { padding: 4 },
+  deleteBtnText: { color: '#FF3B30', fontSize: 20, lineHeight: 20, fontWeight: '600' },
 });
