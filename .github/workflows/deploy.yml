@@ -36,7 +36,7 @@ jobs:
       - name: Build web app
         run: pnpm --filter @workout/web build
         env:
-          NODE_ENV: production
+          VITE_BASE_PATH: /workout-tracker-/
 
       - uses: actions/configure-pages@v4
 
