@@ -229,6 +229,29 @@ export default function Today() {
                     </div>
                   </div>
 
+                  {/* Delete button */}
+                  <button
+                    onClick={async () => {
+                      if (confirm(`Delete "${program.name}"?`)) {
+                        await db.deleteProgram(program.id);
+                        setTemplates(prev => prev.filter(t => t.program.id !== program.id));
+                      }
+                    }}
+                    style={{
+                      background: 'none',
+                      border: 'none',
+                      color: '#FF3B30',
+                      fontSize: 22,
+                      cursor: 'pointer',
+                      padding: '4px 8px',
+                      flexShrink: 0,
+                      lineHeight: 1,
+                    }}
+                    title="Delete routine"
+                  >
+                    ×
+                  </button>
+
                   {/* Start button */}
                   <button
                     onClick={() => startWorkout(program.id, firstRoutineId)}
