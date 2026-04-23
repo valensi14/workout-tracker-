@@ -1,0 +1,80 @@
+.layout {
+  display: flex;
+  min-height: 100vh;
+  font-family: system-ui, sans-serif;
+}
+
+/* ── Sidebar (desktop) ─────────────────────────── */
+.sidebar {
+  width: 200px;
+  border-right: 1px solid #eee;
+  padding: 24px 16px;
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  flex-shrink: 0;
+}
+
+/* ── Main content ──────────────────────────────── */
+.main {
+  flex: 1;
+  padding: 32px;
+  overflow-y: auto;
+}
+
+/* ── Bottom nav (hidden on desktop) ───────────── */
+.bottom-nav {
+  display: none;
+}
+
+/* ── Mobile overrides ──────────────────────────── */
+@media (max-width: 768px) {
+  .sidebar {
+    display: none;
+  }
+
+  .main {
+    padding: 20px 16px 80px 16px;
+    width: 100%;
+  }
+
+  .bottom-nav {
+    display: flex;
+    position: fixed;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    height: 62px;
+    background: #fff;
+    border-top: 1px solid #e5e5e5;
+    z-index: 100;
+    box-shadow: 0 -2px 12px rgba(0, 0, 0, 0.06);
+  }
+
+  .bottom-nav a {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    text-decoration: none;
+    color: #aaa;
+    font-size: 10px;
+    font-weight: 500;
+    gap: 3px;
+    transition: color 0.15s;
+  }
+
+  .bottom-nav a.active {
+    color: #007AFF;
+  }
+
+  .bottom-nav .nav-icon {
+    font-size: 22px;
+    line-height: 1;
+  }
+
+  .bottom-nav .nav-label {
+    font-size: 10px;
+  }
+}

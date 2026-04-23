@@ -1,19 +1,28 @@
 import React from 'react';
 import { Outlet, NavLink } from 'react-router-dom';
+import './Layout.css';
 
 const nav = [
-  { to: '/', label: 'Start Workout' },
-  { to: '/history', label: 'History' },
-  { to: '/exercises', label: 'Exercises' },
-  { to: '/progress', label: 'Progress' },
+  { to: '/', label: 'Start',     mobileLabel: 'Start',     icon: '▶️' },
+  { to: '/history',   label: 'History',   mobileLabel: 'History',   icon: '🕐' },
+  { to: '/exercises', label: 'Exercises', mobileLabel: 'Exercises', icon: '💪' },
+  { to: '/progress',  label: 'Progress',  mobileLabel: 'Progress',  icon: '📈' },
 ];
+
+const sidebarLabels: Record<string, string> = {
+  '/':           'Start Workout',
+  '/history':    'History',
+  '/exercises':  'Exercises',
+  '/progress':   'Progress',
+};
 
 export default function Layout() {
   return (
-    <div style={{ display: 'flex', minHeight: '100vh', fontFamily: 'system-ui, sans-serif' }}>
-      <nav style={{ width: 200, borderRight: '1px solid #eee', padding: '24px 16px', display: 'flex', flexDirection: 'column', gap: 4 }}>
+    <div className="layout">
+      {/* ── Sidebar (desktop only) ── */}
+      <nav className="sidebar">
         <h2 style={{ marginBottom: 24, fontSize: 18, fontWeight: 700 }}>Workout</h2>
-        {nav.map(({ to, label }) => (
+        {nav.map(({ to }) => (
           <NavLink
             key={to}
             to={to}
@@ -25,13 +34,30 @@ export default function Layout() {
               fontWeight: isActive ? 600 : 400,
             })}
           >
-            {label}
+            {sidebarLabels[to]}
           </NavLink>
         ))}
       </nav>
-      <main style={{ flex: 1, padding: 32, overflowY: 'auto' }}>
+
+      {/* ── Page content ── */}
+      <main className="main">
         <Outlet />
       </main>
+
+      {/* ── Bottom tab bar (mobile only) ── */}
+      <nav className="bottom-nav">
+        {nav.map(({ to, mobileLabel, icon }) => (
+          <NavLink
+            key={to}
+            to={to}
+            end={to === '/'}
+            className={({ isActive }) => isActive ? 'active' : ''}
+          >
+            <span className="nav-icon">{icon}</span>
+            <span className="nav-label">{mobileLabel}</span>
+          </NavLink>
+        ))}
+      </nav>
     </div>
   );
 }
