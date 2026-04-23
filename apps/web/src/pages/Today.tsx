@@ -126,48 +126,6 @@ export default function Today() {
         </div>
       )}
 
-      {/* Quick Start section */}
-      <div style={{ padding: '8px 16px 0' }}>
-        <p style={{
-          fontSize: 13,
-          fontWeight: 600,
-          color: '#8E8E93',
-          textTransform: 'uppercase',
-          letterSpacing: 0.5,
-          marginBottom: 8,
-        }}>
-          Quick Start
-        </p>
-        <div style={{
-          background: '#fff',
-          borderRadius: 12,
-          overflow: 'hidden',
-        }}>
-          <button
-            onClick={() => startWorkout()}
-            style={{
-              width: '100%',
-              background: 'none',
-              border: 'none',
-              padding: '15px 16px',
-              display: 'flex',
-              alignItems: 'center',
-              justifyContent: 'space-between',
-              cursor: 'pointer',
-              fontSize: 17,
-              fontWeight: 400,
-              color: '#007AFF',
-              textAlign: 'left',
-            }}
-          >
-            <span>Start Empty Workout</span>
-            <svg width="9" height="15" viewBox="0 0 9 15" fill="none">
-              <path d="M1 1L8 7.5L1 14" stroke="#C7C7CC" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"/>
-            </svg>
-          </button>
-        </div>
-      </div>
-
       {/* My Routines section */}
       <div style={{ padding: '20px 16px 0' }}>
         <div style={{
