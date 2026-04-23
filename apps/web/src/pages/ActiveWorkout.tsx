@@ -193,7 +193,7 @@ export default function ActiveWorkout() {
                     />
                     {entry.done
                       ? <span style={{ color: '#34C759', fontWeight: 700, fontSize: 18 }}>✓</span>
-                      : <button onClick={() => completeSet(entry)} style={{ background: '#34C759', color: '#fff', border: 'none', borderRadius: 8, padding: '6px 16px', cursor: 'pointer', fontWeight: 600 }}>Log</button>
+                      : <button onClick={() => completeSet(entry)} style={{ background: '#34C759', color: '#fff', border: 'none', borderRadius: 8, padding: '6px 16px', cursor: 'pointer', fontWeight: 700, fontSize: 18, lineHeight: 1 }}>✓</button>
                     }
                   </div>
                 );
