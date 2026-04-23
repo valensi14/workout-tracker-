@@ -73,7 +73,7 @@ export default function NewProgram() {
     const programId = crypto.randomUUID();
     const routineId = crypto.randomUUID();
     const program = { id: programId, name: name.trim(), description: description.trim(), createdAt: Date.now() };
-    const routine: Routine = { id: routineId, programId, name: 'Day 1', order: 0 };
+    const routine: Routine = { id: routineId, programId, name: 'Workout 1', order: 0 };
     const routineExercises: RoutineExercise[] = selected.map((s, i) => ({
       id: crypto.randomUUID(),
       routineId,

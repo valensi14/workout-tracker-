@@ -224,7 +224,7 @@ export default function Today() {
                             {exerciseNames.slice(0, 4).join(', ')}
                             {exerciseNames.length > 4 && ` +${exerciseNames.length - 4} more`}
                           </>
-                        : `${routineCount} day${routineCount !== 1 ? 's' : ''}`
+                        : `${routineCount} workout${routineCount !== 1 ? 's' : ''}`
                       }
                     </div>
                   </div>
