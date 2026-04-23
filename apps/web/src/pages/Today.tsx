@@ -142,7 +142,7 @@ export default function Today() {
             letterSpacing: 0.5,
             margin: 0,
           }}>
-            My Routines
+            My Templates
           </p>
           <button
             onClick={() => navigate('/programs/new')}
